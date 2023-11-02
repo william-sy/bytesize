@@ -1,0 +1,396 @@
+esphome:
+  name: wp-p-rs485
+  friendly_name: WP-P-RS485
+  comment: Eastron KWH meters
+
+esp32:
+  board: m5stack-atom
+  framework:
+    type: esp-idf
+
+substitutions:
+  device_name: Eastron
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret wp-p-api
+
+ota:
+  password: !secret wp-p-ota
+
+wifi:
+  # Local of things (no internet)
+  ssid: !secret lot_wifi_ssid
+  password: !secret lot_wifi_password
+  fast_connect: on
+  use_address: 192.168.13.23
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Wp-P-Rs585 Fallback Hotspot"
+    password: !secret wp-p-fbw
+
+##
+# Enable captive portal  
+captive_portal:
+##
+# Debugging webserver
+web_server:
+#  port: 80
+##
+# Keep some time
+time:
+  - platform: homeassistant
+    id: homeassistant_time
+###
+# Modbus Settings 
+###
+uart:
+  id:          uart_modbus_wp
+  tx_pin:      19
+  rx_pin:      22
+  baud_rate:   9600
+  stop_bits:   1
+  debug:
+    direction: BOTH
+
+modbus:
+  send_wait_time: 500ms
+  uart_id: uart_modbus_wp
+  id: mod_bus
+  #send_wait_time: 2000ms
+
+modbus_controller:
+  # Eastron meter for outside heatpump:
+  - id: modbus_wp_buiten
+    address: 2
+    setup_priority: -10
+    modbus_id: mod_bus
+  # Eastron meter for inside heatpump:
+  - id: modbus_wp_binnen
+    address: 1
+    setup_priority: -10
+    modbus_id: mod_bus
+
+
+sensor:
+  ###
+  ## Eastron SMD220 (Single phase meter)
+  ## OutSide Unit - Heatpump
+  #
+
+  # Volts
+  - platform: modbus_controller
+    modbus_controller_id: modbus_wp_buiten
+    name: ${device_name} -O- Voltage
+    register_type: read
+    address: 0x0000 # 30001
+    value_type: FP32
+    unit_of_measurement: V
+    device_class: "voltage"
+    state_class: "measurement"
+    accuracy_decimals: 3 
+  # Current
+  - platform: modbus_controller
+    modbus_controller_id: modbus_wp_buiten
+    name: ${device_name} -O- Current
+    register_type: read
+    address: 0x0006 # 30007
+    value_type: FP32
+    device_class: "current"
+    state_class: "measurement"
+    unit_of_measurement: A
+    accuracy_decimals: 3
+  # Power
+  - platform: modbus_controller
+    modbus_controller_id: modbus_wp_buiten
+    name: ${device_name} -O- Power
+    register_type: read
+    address: 0x000C # 30013
+    value_type: FP32
+    unit_of_measurement: W
+    device_class: "power"
+    state_class: "measurement"
+    accuracy_decimals: 3
+  # Apparent Power
+  - platform: modbus_controller
+    modbus_controller_id: modbus_wp_buiten
+    name: ${device_name} -O- Apparent Power
+    register_type: read
+    address: 0x0012 # 30013
+    value_type: FP32
+    device_class: ""
+    state_class: "measurement"
+    unit_of_measurement: VA
+    accuracy_decimals: 3
+  # Reactive Power
+  - platform: modbus_controller
+    modbus_controller_id: modbus_wp_buiten
+    name: ${device_name} -O- Reactive Power
+    register_type: read
+    address: 0x0018 # 30025
+    value_type: FP32
+    device_class: ""
+    state_class: "measurement"
+    unit_of_measurement: VAr
+    accuracy_decimals: 3
+  # Power Factor
+  - platform: modbus_controller
+    modbus_controller_id: modbus_wp_buiten
+    name: ${device_name} -O- Power Factor
+    register_type: read
+    address: 0x001E # 30031
+    value_type: FP32
+    device_class: "power_factor"
+    state_class: "measurement"
+    unit_of_measurement: ""
+    accuracy_decimals: 3
+  # Phase angle
+  - platform: modbus_controller
+    modbus_controller_id: modbus_wp_buiten
+    name: ${device_name} -O- Phase angle
+    register_type: read
+    address: 0x0024 # 30037
+    value_type: FP32
+    device_class: ""
+    state_class: "measurement"
+    unit_of_measurement: ""
+    accuracy_decimals: 3
+  # Frequency
+  - platform: modbus_controller
+    modbus_controller_id: modbus_wp_buiten
+    name: ${device_name} -O- Freq
+    register_type: read
+    address: 0x0046 #30071
+    value_type: FP32
+    unit_of_measurement: Hz
+    state_class: "measurement"
+    accuracy_decimals: 3
+  # Import active energy
+  - platform: modbus_controller
+    modbus_controller_id: modbus_wp_buiten
+    name: ${device_name} -O- Import Active Energy
+    register_type: read
+    address: 0x0048 # 30073
+    value_type: FP32
+    unit_of_measurement: kWh
+    state_class: "total_increasing"
+    device_class: "energy"
+    accuracy_decimals: 3
+  # Export active energy
+  - platform: modbus_controller
+    modbus_controller_id: modbus_wp_buiten
+    name: ${device_name} -O- Export Active Energy
+    register_type: read
+    address: 0x004A #30075
+    value_type: FP32
+    unit_of_measurement: kWh
+    state_class: "total_increasing"
+    device_class: "energy"
+    accuracy_decimals: 3
+  # Import reactive energy
+  - platform: modbus_controller
+    modbus_controller_id: modbus_wp_buiten
+    name: ${device_name} -O- Import Active Energy
+    register_type: read
+    address: 0x004D # 30077
+    value_type: FP32
+    unit_of_measurement: kWh
+    state_class: "total_increasing"
+    device_class: "energy"
+    accuracy_decimals: 3
+  # Export reactive energy
+  - platform: modbus_controller
+    modbus_controller_id: modbus_wp_buiten
+    name: ${device_name} -O- Export Active Energy
+    register_type: read
+    address: 0x004F #30079
+    value_type: FP32
+    unit_of_measurement: kWh
+    state_class: "total_increasing"
+    device_class: "energy"
+    accuracy_decimals: 3
+  # Total active energy
+  - platform: modbus_controller
+    modbus_controller_id: modbus_wp_buiten
+    name: ${device_name} -O- Total Active Energy
+    register_type: read
+    address: 0x0156 # 30343
+    value_type: FP32
+    unit_of_measurement: kWh
+    state_class: "total_increasing"
+    device_class: "energy"
+    accuracy_decimals: 3
+  # Total reactive energy=
+  - platform: modbus_controller
+    modbus_controller_id: modbus_wp_buiten
+    name: ${device_name} -O- Total Reactive Energy
+    register_type: read
+    address: 0x0158 # 30345
+    value_type: FP32
+    unit_of_measurement: kVArh
+    state_class: "total_increasing"
+    device_class: "energy"
+    accuracy_decimals: 3
+
+  ###
+  ## Inside Unit
+  #
+
+  # Volts
+  - platform: modbus_controller
+    modbus_controller_id: modbus_wp_binnen
+    name: ${device_name} -I- Voltage
+    register_type: read
+    address: 0x0000 # 30001
+    value_type: FP32
+    unit_of_measurement: V
+    device_class: "voltage"
+    state_class: "measurement"
+    accuracy_decimals: 3 
+  # Current
+  - platform: modbus_controller
+    modbus_controller_id: modbus_wp_binnen
+    name: ${device_name} -I- Current
+    register_type: read
+    address: 0x0006 # 30007
+    value_type: FP32
+    device_class: "current"
+    state_class: "measurement"
+    unit_of_measurement: A
+    accuracy_decimals: 3
+  # Power
+  - platform: modbus_controller
+    modbus_controller_id: modbus_wp_binnen
+    name: ${device_name} -I- Power
+    register_type: read
+    address: 0x000C # 30013
+    value_type: FP32
+    unit_of_measurement: W
+    device_class: "power"
+    state_class: "measurement"
+    accuracy_decimals: 3
+  # Apparent Power
+  - platform: modbus_controller
+    modbus_controller_id: modbus_wp_binnen
+    name: ${device_name} -I- Apparent Power
+    register_type: read
+    address: 0x0012 # 30013
+    value_type: FP32
+    device_class: ""
+    state_class: "measurement"
+    unit_of_measurement: VA
+    accuracy_decimals: 3
+  # Reactive Power
+  - platform: modbus_controller
+    modbus_controller_id: modbus_wp_binnen
+    name: ${device_name} -I- Reactive Power
+    register_type: read
+    address: 0x0018 # 30025
+    value_type: FP32
+    device_class: ""
+    state_class: "measurement"
+    unit_of_measurement: VAr
+    accuracy_decimals: 3
+  # Power Factor
+  - platform: modbus_controller
+    modbus_controller_id: modbus_wp_binnen
+    name: ${device_name} -I- Power Factor
+    register_type: read
+    address: 0x001E # 30031
+    value_type: FP32
+    device_class: "power_factor"
+    state_class: "measurement"
+    unit_of_measurement: ""
+    accuracy_decimals: 3
+  # Phase angle
+  - platform: modbus_controller
+    modbus_controller_id: modbus_wp_binnen
+    name: ${device_name} -I- Phase angle
+    register_type: read
+    address: 0x0024 # 30037
+    value_type: FP32
+    device_class: ""
+    state_class: "measurement"
+    unit_of_measurement: ""
+    accuracy_decimals: 3
+  # Frequency
+  - platform: modbus_controller
+    modbus_controller_id: modbus_wp_binnen
+    name: ${device_name} -I- Freq
+    register_type: read
+    address: 0x0046 #30071
+    value_type: FP32
+    unit_of_measurement: Hz
+    state_class: "measurement"
+    accuracy_decimals: 3
+  # Import active energy
+  - platform: modbus_controller
+    modbus_controller_id: modbus_wp_binnen
+    name: ${device_name} -I- Import Active Energy
+    register_type: read
+    address: 0x0048 # 30073
+    value_type: FP32
+    unit_of_measurement: kWh
+    state_class: "total_increasing"
+    device_class: "energy"
+    accuracy_decimals: 3
+  # Export active energy
+  - platform: modbus_controller
+    modbus_controller_id: modbus_wp_binnen
+    name: ${device_name} -I- Export Active Energy
+    register_type: read
+    address: 0x004A #30075
+    value_type: FP32
+    unit_of_measurement: kWh
+    state_class: "total_increasing"
+    device_class: "energy"
+    accuracy_decimals: 3
+  # Import reactive energy
+  - platform: modbus_controller
+    modbus_controller_id: modbus_wp_binnen
+    name: ${device_name} -I- Import Active Energy
+    register_type: read
+    address: 0x004D # 30077
+    value_type: FP32
+    unit_of_measurement: kWh
+    state_class: "total_increasing"
+    device_class: "energy"
+    accuracy_decimals: 3
+  # Export reactive energy
+  - platform: modbus_controller
+    modbus_controller_id: modbus_wp_binnen
+    name: ${device_name} -I- Export Active Energy
+    register_type: read
+    address: 0x004F #30079
+    value_type: FP32
+    unit_of_measurement: kWh
+    state_class: "total_increasing"
+    device_class: "energy"
+    accuracy_decimals: 3
+  # Total active energy
+  - platform: modbus_controller
+    modbus_controller_id: modbus_wp_binnen
+    name: ${device_name} -I- Total Active Energy
+    register_type: read
+    address: 0x0156 # 30343
+    value_type: FP32
+    unit_of_measurement: kWh
+    state_class: "total_increasing"
+    device_class: "energy"
+    accuracy_decimals: 3
+  # Total reactive energy=
+  - platform: modbus_controller
+    modbus_controller_id: modbus_wp_binnen
+    name: ${device_name} -I- Total Reactive Energy
+    register_type: read
+    address: 0x0158 # 30345
+    value_type: FP32
+    unit_of_measurement: kVArh
+    state_class: "total_increasing"
+    device_class: "energy"
+    accuracy_decimals: 3
