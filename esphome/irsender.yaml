@@ -1,0 +1,532 @@
+esphome:
+  name: irremoteliving
+  friendly_name: IrRemoteLiving
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret ir-api
+
+ota:
+  password: !secret ir-ota
+
+wifi:
+  ssid: !secret lot_wifi_ssid
+  password: !secret lot_wifi_password
+  use_address: 192.168.13.25 
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Irremoteliving Fallback Hotspot"
+    password: !secret ir-fbw
+
+captive_portal:
+web_server:
+  
+remote_receiver:
+  pin:
+    number: GPIO32
+    inverted: true
+  dump:
+    - samsung
+    - sony
+    #- rc_switch
+    # - all
+
+
+remote_transmitter:
+  pin: GPIO26
+  carrier_duty_percent: 50%
+
+button:
+### 
+# Samsung IR Remote:
+  - platform: template
+    name: "TV - On/Off"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E06798
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E06798
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E040BF
+  - platform: template
+    name: "TV - Source"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E0807F
+  - platform: template
+    name: "TV - 1"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E020DF
+  - platform: template
+    name: "TV - 2"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E0A05F
+  - platform: template
+    name: "TV - 3"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E0609F
+  - platform: template
+    name: "TV - 4"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E010EF
+  - platform: template
+    name: "TV - 5"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E0906F
+  - platform: template
+    name: "TV - 6"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E050AF
+  - platform: template
+    name: "TV - 7"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E030CF
+  - platform: template
+    name: "TV - 8"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E0B04F
+  - platform: template
+    name: "TV - 9"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E0708F
+  - platform: template
+    name: "TV - 0"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E08877
+
+  - platform: template
+    name: "TV - TTX/MIX"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E034CB
+  - platform: template
+    name: "TV - PRE-CH"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E0C837
+
+  - platform: template
+    name: "TV - Vol Up"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E0E01F
+  - platform: template
+    name: "TV - Vol Down"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E0D02F
+  - platform: template
+    name: "TV - Mute"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E0F00F
+  - platform: template
+    name: "TV - CH LST"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E0D629
+  - platform: template
+    name: "TV - CH Up"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E048B7
+  - platform: template
+    name: "TV - Ch Down"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E008F7
+  - platform: template
+    name: "TV - Netflix"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E0CF30
+  - platform: template
+    name: "TV - Prime"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E02FD0
+  - platform: template
+    name: "TV - Rakuten"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E03DC2
+  - platform: template
+    name: "TV - Guide"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E0F20D
+  - platform: template
+    name: "TV - Home"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E09E61
+
+  - platform: template
+    name: "TV - Arr Up"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E09E61
+  - platform: template
+    name: "TV - Arr Left"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E0A659
+  - platform: template
+    name: "TV - OK/Enter"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E016E9
+  - platform: template
+    name: "TV - Arr Right"
+    on_press: 
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E046B9
+  - platform: template
+    name: "TV - Arr Down"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E08679
+  - platform: template
+    name: "TV - Return"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E01AE5
+  - platform: template
+    name: "TV - Exit"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E0B44B
+  - platform: template
+    name: "TV - A"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E036C9
+  - platform: template
+    name: "TV - B"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E028D7
+  - platform: template
+    name: "TV - C"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E0A857
+  - platform: template
+    name: "TV - D"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E06897
+  - platform: template
+    name: "TV - Settings"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E058A7
+  - platform: template
+    name: "TV - INFO"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E0F807
+  - platform: template
+    name: "TV - AD/SUBT."
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E0A45B
+  - platform: template
+    name: "TV - Stop"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E0629D
+  - platform: template
+    name: "TV - Reverse"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E0A25D
+  - platform: template
+    name: "TV - Play"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E0E21D
+  - platform: template
+    name: "TV - Pause"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E052AD
+  - platform: template
+    name: "TV - Forward"
+    on_press:
+      - remote_transmitter.transmit_samsung:
+          data: 0xE0E012ED
+
+### 
+# Sony IR Remote:
+  - platform: template
+    name: "Soundbar - On/Off"
+    on_press:
+      - remote_transmitter.transmit_sony:
+          data: 0x0000540C
+          repeat: 4
+          nbits: 15
+  - platform: template
+    name: "Soundbar - Source"
+    on_press:
+      - remote_transmitter.transmit_sony:
+          data: 0x00004B0D
+          repeat: 4
+          nbits: 15
+  - platform: template
+    name: "Soundbar - TV - On/Off"
+    on_press:
+      - remote_transmitter.transmit_sony:
+          data: 0x00000A90
+          repeat: 4
+          nbits: 12
+  - platform: template
+    name: "Soundbar - TV - Source"
+    on_press:
+      - remote_transmitter.transmit_sony:
+          data: 0x00000A50
+          repeat: 4
+          nbits: 12
+  - platform: template
+    name: "Soundbar - TV - CH Up"
+    on_press:
+      - remote_transmitter.transmit_sony:
+          data: 0x00000090
+          repeat: 4
+          nbits: 12
+  - platform: template
+    name: "Soundbar - Display"
+    on_press:
+      - remote_transmitter.transmit_sony:
+          data: 0x0000040D
+          repeat: 4
+          nbits: 15
+  - platform: template
+    name: "Soundbar - SW Vol Up"
+    on_press:
+      - remote_transmitter.transmit_sony:
+          data: 0x00001D0C
+          repeat: 4
+          nbits: 15
+  - platform: template
+    name: "Soundbar - TV - CH Down"
+    on_press:
+      - remote_transmitter.transmit_sony:
+          data: 0x00000890
+          repeat: 4
+          nbits: 12
+  - platform: template
+    name: "Soundbar - Clear Audio +"
+    on_press:
+      - remote_transmitter.transmit_sony:
+          data: 0x000F4116
+          repeat: 4
+          nbits: 20
+  - platform: template
+    name: "Soundbar - SW Vol Down"
+    on_press:
+      - remote_transmitter.transmit_sony:
+          data: 0x00005D0C
+          repeat: 4
+          nbits: 15
+  - platform: template
+    name: "Soundbar - Audio Standard"
+    on_press:
+      - remote_transmitter.transmit_sony:
+          data: 0x000B8116
+          repeat: 4
+          nbits: 20
+  - platform: template
+    name: "Soundbar - Audio Movie"
+    on_press:
+      - remote_transmitter.transmit_sony:
+          data: 0x0000610D
+          repeat: 4
+          nbits: 15
+  - platform: template
+    name: "Soundbar - Audio Game"
+    on_press:
+      - remote_transmitter.transmit_sony:
+          data: 0x0001E114
+          repeat: 4
+          nbits: 20
+  - platform: template
+    name: "Soundbar - Audio Music"
+    on_press:
+      - remote_transmitter.transmit_sony:
+          data: 0x0000490D
+          repeat: 4
+          nbits: 15
+  - platform: template
+    name: "Soundbar - Audio P.Audio"
+    on_press:
+      - remote_transmitter.transmit_sony:
+          data: 0x00098116
+          repeat: 4
+          nbits: 20
+  - platform: template
+    name: "Soundbar - Audio Sports"
+    on_press:
+      - remote_transmitter.transmit_sony:
+          data: 0x00018116
+          repeat: 4
+          nbits: 20
+  - platform: template
+    name: "Soundbar - Voice"
+    on_press:
+      - remote_transmitter.transmit_sony:
+          data: 0x0009C114
+          repeat: 4
+          nbits: 20
+  - platform: template
+    name: "Soundbar - Night"
+    on_press:
+      - remote_transmitter.transmit_sony:
+          data: 0x0000020D
+          repeat: 4
+          nbits: 15
+  - platform: template
+    name: "Soundbar - Mute"
+    on_press:
+      - remote_transmitter.transmit_sony:
+          data: 0x0000140C
+          repeat: 4
+          nbits: 15
+  - platform: template
+    name: "Soundbar - Return"
+    on_press:
+      - remote_transmitter.transmit_sony:
+          data: 0x000BE110
+          repeat: 4
+          nbits: 20
+  - platform: template
+    name: "Soundbar - Amp Menu"
+    on_press:
+      - remote_transmitter.transmit_sony:
+          data: 0x0000770D
+          repeat: 4
+          nbits: 15
+  - platform: template
+    name: "Soundbar - Vol Up"
+    on_press:
+      - remote_transmitter.transmit_sony:
+          data: 0x0000240C
+          repeat: 4
+          nbits: 15
+  - platform: template
+    name: "Soundbar - Vol Down"
+    on_press:
+      - remote_transmitter.transmit_sony:
+          data: 0x0000640C
+          repeat: 4
+          nbits: 15
+  - platform: template
+    name: "Soundbar - Arr Up"
+    on_press:
+      - remote_transmitter.transmit_sony:
+          data: 0x00000F0D
+          repeat: 4
+          nbits: 15
+  - platform: template
+    name: "Soundbar - Arr Down"
+    on_press:
+      - remote_transmitter.transmit_sony:
+          data: 0x00004F0D
+          repeat: 4
+          nbits: 15
+  - platform: template
+    name: "Soundbar - Arr Left"
+    on_press:
+      - remote_transmitter.transmit_sony:
+          data: 0x00002F0D
+          repeat: 4
+          nbits: 15
+  - platform: template
+    name: "Soundbar - Arr Right"
+    on_press:
+      - remote_transmitter.transmit_sony:
+          data: 0x00006F0D
+          repeat: 4
+          nbits: 15
+  - platform: template
+    name: "Soundbar - OK"
+    on_press:
+      - remote_transmitter.transmit_sony:
+          data: 0x0000180C
+          repeat: 4
+          nbits: 15 
+  - platform: template
+    name: "Soundbar - Skipp Back"
+    on_press:
+      - remote_transmitter.transmit_sony:
+          data: 0x0000C110
+          repeat: 4
+          nbits: 20
+  - platform: template
+    name: "Soundbar - Pause"
+    on_press:
+      - remote_transmitter.transmit_sony:
+          data: 0x0009C110
+          repeat: 4
+          nbits: 20
+  - platform: template
+    name: "Soundbar - Skipp Forward"
+    on_press:
+      - remote_transmitter.transmit_sony:
+          data: 0x0008C110
+          repeat: 4
+          nbits: 20
+  - platform: template
+    name: "Soundbar - Rewind"
+    on_press:
+      - remote_transmitter.transmit_sony:
+          data: 0x000CC110
+          repeat: 4
+          nbits: 20
+  - platform: template
+    name: "Soundbar - Play"
+    on_press:
+      - remote_transmitter.transmit_sony:
+          data: 0x0004C110
+          repeat: 4
+          nbits: 20
+  - platform: template
+    name: "Soundbar - Forward"
+    on_press:
+      - remote_transmitter.transmit_sony:
+          data: 0x0002C110
+          repeat: 4
+          nbits: 20
+  - platform: template
+    name: "Soundbar - Pairing"
+    on_press:
+      - remote_transmitter.transmit_sony:
+          data: 0x000EE114
+          repeat: 4
+          nbits: 20
+  - platform: template
+    name: "Soundbar - Stop"
+    on_press:
+      - remote_transmitter.transmit_sony:
+          data: 0x0001C110
+          repeat: 4
+          nbits: 20
