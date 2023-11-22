@@ -1,0 +1,318 @@
+alias: WTW-Fan-Controller
+description: ""
+trigger:
+  - platform: state
+    entity_id:
+      - input_boolean.wtw_fan_high
+    id: HIGH
+    from: null
+    to: null
+  - platform: state
+    entity_id:
+      - input_boolean.wtw_fan_medium
+    id: MEDIUM
+    from: null
+    to: null
+  - platform: state
+    entity_id:
+      - input_boolean.wtw_fan_low
+    id: LOW
+    from: null
+    to: null
+  - platform: state
+    entity_id:
+      - input_button.wtw_off
+    from: null
+    to: null
+    id: "OFF"
+  - platform: state
+    entity_id:
+      - input_boolean.wtw_time_30
+    from: "off"
+    to: "on"
+    id: Time30
+  - platform: state
+    entity_id:
+      - input_boolean.wtw_time_60
+    from: "off"
+    to: "on"
+    id: Time60
+condition: []
+action:
+  - parallel:
+      - if:
+          - condition: trigger
+            id:
+              - HIGH
+        then:
+          - service: number.set_value
+            target:
+              entity_id: number.wtw_rs485_demand_ventilation_speed
+            data:
+              value: "399.0"
+          - service: number.set_value
+            target:
+              entity_id:
+                - number.wtw_rs485_demand_ventialtion_onoff
+            data:
+              value: "1.0"
+          - service: input_boolean.turn_off
+            data:
+              entity_id:
+                - input_boolean.wtw_fan_low
+                - input_boolean.wtw_fan_medium
+      - if:
+          - condition: trigger
+            id:
+              - MEDIUM
+        then:
+          - service: number.set_value
+            target:
+              entity_id: number.wtw_rs485_demand_ventilation_speed
+            data:
+              value: "266.0"
+          - service: number.set_value
+            target:
+              entity_id:
+                - number.wtw_rs485_demand_ventialtion_onoff
+            data:
+              value: "1.0"
+          - service: input_boolean.turn_off
+            data:
+              entity_id:
+                - input_boolean.wtw_fan_low
+                - input_boolean.wtw_fan_high
+        enabled: true
+      - if:
+          - condition: trigger
+            id:
+              - LOW
+        then:
+          - service: input_boolean.turn_on
+            data:
+              entity_id: "{{ trigger.to_state.entity_id }}"
+            enabled: true
+          - service: number.set_value
+            target:
+              entity_id: number.wtw_rs485_demand_ventilation_speed
+            data:
+              value: "133.0"
+          - service: number.set_value
+            data:
+              value: "1.0"
+            target:
+              entity_id: number.wtw_rs485_demand_ventialtion_onoff
+          - service: input_boolean.turn_off
+            data:
+              entity_id:
+                - input_boolean.wtw_fan_medium
+                - input_boolean.wtw_fan_high
+      - if:
+          - condition: trigger
+            id:
+              - "OFF"
+        then:
+          - service: number.set_value
+            target:
+              entity_id: number.wtw_rs485_demand_ventilation_speed
+            data:
+              value: "0.0"
+          - service: number.set_value
+            target:
+              entity_id:
+                - number.wtw_rs485_demand_ventialtion_onoff
+            data:
+              value: "0.0"
+          - service: input_boolean.turn_off
+            data:
+              entity_id:
+                - input_boolean.wtw_fan_low
+                - input_boolean.wtw_fan_medium
+                - input_boolean.wtw_fan_high
+      - if:
+          - condition: trigger
+            id:
+              - Time60
+        then:
+          - delay:
+              hours: 1
+              minutes: 0
+              seconds: 0
+              milliseconds: 0
+            enabled: true
+          - service: number.set_value
+            target:
+              entity_id: number.wtw_rs485_demand_ventilation_speed
+            data:
+              value: "0.0"
+            enabled: false
+          - service: number.set_value
+            target:
+              entity_id:
+                - number.wtw_rs485_demand_ventialtion_onoff
+            data:
+              value: "0.0"
+            enabled: false
+          - service: input_boolean.turn_off
+            data:
+              entity_id:
+                - "{{ trigger.to_state.entity_id }}"
+                - input_boolean.wtw_fan_low
+                - input_boolean.wtw_fan_medium
+                - input_boolean.wtw_fan_high
+      - if:
+          - condition: trigger
+            id:
+              - Time30
+        then:
+          - delay:
+              hours: 0
+              minutes: 30
+              seconds: 0
+              milliseconds: 0
+            enabled: true
+          - service: number.set_value
+            target:
+              entity_id: number.wtw_rs485_demand_ventilation_speed
+            data:
+              value: "0.0"
+            enabled: true
+          - service: number.set_value
+            target:
+              entity_id:
+                - number.wtw_rs485_demand_ventialtion_onoff
+            data:
+              value: "0.0"
+            enabled: true
+          - service: input_boolean.turn_off
+            data:
+              entity_id:
+                - "{{ trigger.to_state.entity_id }}"
+                - input_boolean.wtw_fan_low
+                - input_boolean.wtw_fan_medium
+                - input_boolean.wtw_fan_high
+  - if:
+      - condition: trigger
+        id:
+          - HIGH
+    then:
+      - service: number.set_value
+        target:
+          entity_id: number.wtw_rs485_demand_ventilation_speed
+        data:
+          value: "399.0"
+      - service: number.set_value
+        target:
+          entity_id:
+            - number.wtw_rs485_demand_ventialtion_onoff
+        data:
+          value: "1.0"
+    enabled: false
+  - if:
+      - condition: trigger
+        id:
+          - MEDIUM
+    then:
+      - service: number.set_value
+        target:
+          entity_id: number.wtw_rs485_demand_ventilation_speed
+        data:
+          value: "266.0"
+      - service: number.set_value
+        target:
+          entity_id:
+            - number.wtw_rs485_demand_ventialtion_onoff
+        data:
+          value: "1.0"
+    enabled: false
+  - if:
+      - condition: trigger
+        id:
+          - LOW
+    then:
+      - service: number.set_value
+        target:
+          entity_id: number.wtw_rs485_demand_ventilation_speed
+        data:
+          value: "133.0"
+      - service: number.set_value
+        data:
+          value: "1.0"
+        target:
+          entity_id: number.wtw_rs485_demand_ventialtion_onoff
+    enabled: false
+  - if:
+      - condition: trigger
+        id:
+          - "OFF"
+    then:
+      - service: number.set_value
+        target:
+          entity_id: number.wtw_rs485_demand_ventilation_speed
+        data:
+          value: "0.0"
+      - service: number.set_value
+        target:
+          entity_id:
+            - number.wtw_rs485_demand_ventialtion_onoff
+        data:
+          value: "0.0"
+    enabled: false
+  - if:
+      - condition: trigger
+        id:
+          - Time60
+    then:
+      - delay:
+          hours: 0
+          minutes: 1
+          seconds: 0
+          milliseconds: 0
+        enabled: true
+      - service: number.set_value
+        target:
+          entity_id: number.wtw_rs485_demand_ventilation_speed
+        data:
+          value: "0.0"
+        enabled: false
+      - service: number.set_value
+        target:
+          entity_id:
+            - number.wtw_rs485_demand_ventialtion_onoff
+        data:
+          value: "0.0"
+        enabled: false
+      - service: input_boolean.turn_off
+        data:
+          entity_id: "{{ trigger.to_state.entity_id }}"
+    enabled: false
+  - if:
+      - condition: trigger
+        id:
+          - Time30
+    then:
+      - delay:
+          hours: 0
+          minutes: 30
+          seconds: 0
+          milliseconds: 0
+        enabled: true
+      - service: number.set_value
+        target:
+          entity_id: number.wtw_rs485_demand_ventilation_speed
+        data:
+          value: "0.0"
+        enabled: true
+      - service: number.set_value
+        target:
+          entity_id:
+            - number.wtw_rs485_demand_ventialtion_onoff
+        data:
+          value: "0.0"
+        enabled: true
+      - service: input_boolean.turn_off
+        data:
+          entity_id: "{{ trigger.to_state.entity_id }}"
+    enabled: false
+mode: single
+
